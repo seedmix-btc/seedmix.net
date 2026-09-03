@@ -20,10 +20,24 @@
       color: #9ca3af;
       font-family: arial, sans-serif;
     }
-    #canvas {
+    .screen {
+      width: min(480px, calc(100vw - 44px), calc((100vh - 190px) * 3 / 2));
+      aspect-ratio: 3 / 2;
+    }
+    .screen canvas {
       display: block;
-      max-width: 100vw;
-      max-height: calc(100vh - 150px);
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+    }
+    .bezel {
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(160deg, #2c2c2c 0%, #161616 45%, #080808 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.9),
+        0 12px 32px rgba(0, 0, 0, 0.75);
     }
     header {
       text-align: center;
@@ -61,7 +75,11 @@
     <h1>SEEDMIX Demo</h1>
     <p class="warning">*Do not use on mainnet*</p>
   </header>
-  <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+  <div class="bezel">
+    <div class="screen">
+      <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    </div>
+  </div>
   <script>
     var Module = { canvas: document.getElementById('canvas') };
   </script>
