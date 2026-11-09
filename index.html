@@ -83,7 +83,48 @@
   <script>
     var Module = { canvas: document.getElementById('canvas') };
   </script>
-  <script src="seedmix.js"></script>
+  <script>
+    // The build uses pthreads, so it needs SharedArrayBuffer and therefore a
+    // cross-origin isolated document. GitHub Pages cannot send the required
+    // COOP/COEP headers, so coi-serviceworker.js adds them. Isolation is only
+    // decided when a document is created, hence the single reload.
+    (async function () {
+      const canIsolate = 'serviceWorker' in navigator && window.isSecureContext;
+
+      if (!window.crossOriginIsolated && canIsolate) {
+        try {
+          await navigator.serviceWorker.register('coi-serviceworker.js');
+          await navigator.serviceWorker.ready;
+
+          if (!navigator.serviceWorker.controller) {
+            await new Promise((resolve) => {
+              navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+              setTimeout(resolve, 3000);
+            });
+          }
+        } catch (error) {
+          console.warn('Service worker registration failed:', error);
+        }
+
+        // sessionStorage keeps this from looping if isolation is unavailable.
+        if (navigator.serviceWorker.controller && !sessionStorage.getItem('coi-reload')) {
+          sessionStorage.setItem('coi-reload', '1');
+          location.reload();
+          return;
+        }
+      }
+
+      sessionStorage.removeItem('coi-reload');
+
+      if (!window.crossOriginIsolated) {
+        console.warn('Cross-origin isolation is unavailable; the threaded WebAssembly build will not start.');
+      }
+
+      const script = document.createElement('script');
+      script.src = 'seedmix.js';
+      document.body.appendChild(script);
+    })();
+  </script>
   <footer>
     <a href="https://github.com/seedmix-btc/seedmix" target="_blank" rel="noopener">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">

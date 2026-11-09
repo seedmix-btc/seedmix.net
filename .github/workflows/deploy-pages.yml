@@ -30,7 +30,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          cp index.html seedmix.js seedmix.wasm _site/
+          cp index.html seedmix.js seedmix.wasm coi-serviceworker.js _site/
           cp CNAME _site/ 2>/dev/null || true
 
       - name: Upload artifact
